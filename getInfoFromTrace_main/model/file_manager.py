@@ -20,27 +20,26 @@ from constants import (
     TEMPORARY_CSV_FILE,
     TEMPORARY_DIR,
 )
+from _config import (
+    EVENT_ID_TO_FIND,
+    EVENT_NAME_TO_FIND,
+    EVENT_TEXTDATA_TO_EXCLUDE,
+)
 
 
 class FileManager:
-    def __init__(self, root):
+    def __init__(self, root, file_prefix):
         self.input_dir_path = path.join(root, INPUT_OUTPUT_DIR, INPUT_DIR)
         self.temporary_dir_path = path.join(root, INPUT_OUTPUT_DIR, TEMPORARY_DIR)
         self.output_dir_path = path.join(root, INPUT_OUTPUT_DIR, OUTPUT_DIR)
-        file_prefix = str(datetime.now()).replace(" ", "_at_")[:-7]
-        file_prefix = (
-            file_prefix[:16]
-            + "h"
-            + file_prefix[17:19]
-            + "m"
-            + file_prefix[20:]
-            + "s_"
-        )
-        self.log_file_path = path.join(self.output_dir_path, file_prefix + LOG_FILE)
-        self.errors_file_path = path.join(self.output_dir_path, file_prefix + ERRORS_FILE)
-        self.result_file_path = path.join(self.output_dir_path, file_prefix + RESULT_FILE)
+        self.file_prefix = file_prefix
+        self.log_file_path = path.join(self.output_dir_path, self.file_prefix + LOG_FILE)
+        self.errors_file_path = path.join(self.output_dir_path, self.file_prefix + ERRORS_FILE)
+        self.result_file_path = path.join(self.output_dir_path, self.file_prefix + RESULT_FILE)
         self.errors_temporary_file_path = path.join(
             self.temporary_dir_path, ERRORS_TEMPORARY_FILE)
+        self.xml_tree = None
+        self.xml_root = None
         self.init_files()
 
     def init_files(self):
@@ -243,12 +242,12 @@ class FileManager:
         for one_file in files_and_doc:
             if one_file.endswith(".CSV"):
                 self.add_in_logtxt("Error! The name of the csv file must be in lower case!", is_message_error=True)
-                return {}, FATAL_ERROR
+                return FATAL_ERROR
 
             if one_file.endswith(".csv"):
                 if is_csv_file_already_exist:
                     self.add_in_logtxt("Error! More than one csv file found. ", is_message_error=True)
-                    return {}, FATAL_ERROR
+                    return FATAL_ERROR
 
                 csv_file_path = one_file
                 is_csv_file_already_exist = True
@@ -276,17 +275,75 @@ class FileManager:
 
         except Exception as e:
             self.add_in_logtxt("Problem writing or reading csv file! The reason is: " + str(e), is_message_error=True)
-            return {}, FATAL_ERROR
+            return FATAL_ERROR
 
         # create a dictionary that will content the ids and the corresponding databases
-        database_info_dict = {}
+        self.database_info_dict = {}
 
         # Open a csv reader
         with open(temporary_csv_file_path, encoding='utf-8') as csvf:
             csvReader = csv.DictReader(csvf)
 
             for row in csvReader:
-                database_info_dict[row[' id']] = row['database']
-                # the above line gives something like: database_info_dict[15] = "my_database"
+                self.database_info_dict[row[' id']] = row['database']
+                # the above line gives something like: self.database_info_dict[15] = "my_database"
 
-        return database_info_dict, SUCCESS
+        return SUCCESS
+
+    def read_xml_file(self):
+        self.add_in_logtxt("Browse folder to find an xml file ...")
+
+        # Browse folder to find an xml file
+        files_and_doc = glob(path.join(self.input_dir_path,"*"), recursive=True)
+
+        is_xml_file_already_exist = False
+        for one_file in files_and_doc:
+            if one_file.endswith(".xml"):
+                if is_xml_file_already_exist:
+                    self.add_in_logtxt("Error! More than one xml file found. ", is_message_error=True)
+                    return FATAL_ERROR
+
+                xml_file_path = one_file
+                is_xml_file_already_exist = True
+                self.add_in_logtxt("xml file found.")
+
+        try:
+            # Load xml file
+            self.add_in_logtxt("Load xml file")
+            self.xml_tree = ET.parse(xml_file_path)
+            self.xml_root = self.xml_tree.getroot()
+            return SUCCESS
+
+        except Exception as e:
+            self.add_in_logtxt(f"Error! Unable to load the xml file. The reason is: {e}", is_message_error=True)
+            return FATAL_ERROR
+
+    def find_selected_elements_from_xml_content(self):
+        self.add_in_logtxt("Extracting information ...")
+        is_message_already_displayed = False
+        for element in self.xml_root[1]:
+            if "Event" in element.tag\
+                    and element.get("id") == EVENT_ID_TO_FIND\
+                    and element.get("name") == EVENT_NAME_TO_FIND:
+                for sub_element in element:
+                    if sub_element.get("name") == "TextData":
+                        TextData = sub_element.text
+                    if sub_element.get("name") == "DatabaseID":
+                        DatabaseID = sub_element.text
+
+                # if TextData is different from the constant EVENT_TEXTDATA_TO_EXCLUDE then we can write the file
+                if not TextData == EVENT_TEXTDATA_TO_EXCLUDE:
+                    try:
+                        if not is_message_already_displayed:
+                            self.add_in_logtxt(f"writing result to {self.result_file_path} ...")
+                            is_message_already_displayed = True
+
+                        with open(self.result_file_path, "a", encoding="utf-8") as f:
+                            f.write(f"""
+
+    USE '{self.database_info_dict.get(DatabaseID)}';
+    {TextData};
+GO
+""")
+                    except Exception as e:
+                        self.add_in_logtxt(f"Error! Unable to write in {self.result_file_path}. " + str(e), is_message_error=True)
