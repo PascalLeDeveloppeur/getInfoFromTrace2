@@ -1,0 +1,20 @@
+2020-12-11 09:48:16.550432 : Start the application
+2020-12-11 09:48:16.550432 : Initialize the log file
+2020-12-11 09:48:16.551431 : Initialize the errors file
+2020-12-11 09:48:16.553431 : Initializing the errors temporary file (2 steps)...
+2020-12-11 09:48:16.554430 : Step 1: Delete errors temporary file if exists
+2020-12-11 09:48:16.554430 : Step 2: Create the errors temporary file
+2020-12-11 09:48:16.561426 : Initialize the result file
+2020-12-11 09:48:16.565426 : Browse folder to find a csv file ...
+2020-12-11 09:48:16.587412 : Original csv file found.
+2020-12-11 09:48:16.588410 : Create a csv file that content the header of each column of the original csv (database, id)
+2020-12-11 09:48:16.590409 : Copy content of original csv file
+2020-12-11 09:48:16.591411 : Paste content of original csv file to the one with the headers
+2020-12-11 09:48:16.601404 : Browse folder to find an xml file ...
+2020-12-11 09:48:16.610399 : xml file found.
+2020-12-11 09:48:16.612399 : Load xml file
+2020-12-11 09:48:16.913242 : Extracting information ...
+2020-12-11 09:48:16.915222 : writing result to .\getInfoFromTrace_main\input_output_files\output_files\2020-12-11_at_09h48m16s_result.sql ...
+2020-12-11 09:48:17.311994 : Writing the final errors file
+2020-12-11 09:48:17.312993 : The final errors file has been written in the output dir.
+2020-12-11 09:48:17.323988 : Program completed
