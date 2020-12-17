@@ -1,0 +1,13 @@
+2020-12-17 15:58:13.421948 : Start the application
+2020-12-17 15:58:13.421948 : Initialize the log file
+2020-12-17 15:58:13.424933 : Initialize the errors file
+2020-12-17 15:58:13.445939 : Initializing the errors temporary file (2 steps)...
+2020-12-17 15:58:13.448936 : Step 1: Delete errors temporary file if exists
+2020-12-17 15:58:13.452934 : Step 2: Create the errors temporary file
+2020-12-17 15:58:13.454933 : Initialize the result file
+2020-12-17 15:58:13.477936 : Browse folder to find a csv file ...
+2020-12-17 15:58:13.480935 : Original csv file found.
+2020-12-17 15:58:13.482931 : Create a csv file that content the header of each column of the original csv (database, id)
+2020-12-17 15:58:13.484932 : Copy content of original csv file
+2020-12-17 15:58:13.485935 : Paste content of original csv file to the one with the headers
+2020-12-17 15:58:13.489936 : Browse folder to find an xml file ...

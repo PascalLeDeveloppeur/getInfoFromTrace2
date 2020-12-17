@@ -296,6 +296,7 @@ class FileManager:
         # Browse folder to find an xml file
         files_and_doc = glob(path.join(self.input_dir_path,"*"), recursive=True)
 
+        xml_file_path = None
         is_xml_file_already_exist = False
         for one_file in files_and_doc:
             if one_file.endswith(".xml"):
@@ -308,6 +309,8 @@ class FileManager:
                 self.add_in_logtxt("xml file found.")
 
         try:
+            if not xml_file_path:
+                raise Exception("No xml file found.")
             # Load xml file
             self.add_in_logtxt("Load xml file")
             self.xml_tree = ET.parse(xml_file_path)

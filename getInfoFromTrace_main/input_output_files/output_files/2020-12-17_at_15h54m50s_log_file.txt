@@ -1,0 +1,20 @@
+2020-12-17 15:54:50.294856 : Start the application
+2020-12-17 15:54:50.294856 : Initialize the log file
+2020-12-17 15:54:50.295853 : Initialize the errors file
+2020-12-17 15:54:50.298852 : Initializing the errors temporary file (2 steps)...
+2020-12-17 15:54:50.299851 : Step 1: Delete errors temporary file if exists
+2020-12-17 15:54:50.300854 : Step 2: Create the errors temporary file
+2020-12-17 15:54:50.302856 : Initialize the result file
+2020-12-17 15:54:50.304856 : Browse folder to find a csv file ...
+2020-12-17 15:54:50.305854 : Original csv file found.
+2020-12-17 15:54:50.307870 : Create a csv file that content the header of each column of the original csv (database, id)
+2020-12-17 15:54:50.310853 : Copy content of original csv file
+2020-12-17 15:54:50.316857 : Paste content of original csv file to the one with the headers
+2020-12-17 15:54:50.320870 : Browse folder to find an xml file ...
+2020-12-17 15:54:50.332874 : Load xml file
+
+            * ERROR * => 2020-12-17 15:54:50.335872 : Error! Unable to load the xml file. The reason is: local variable 'xml_file_path' referenced before assignment
+            
+2020-12-17 15:54:50.338860 : Writing the final errors file
+2020-12-17 15:54:50.361851 : The final errors file has been written in the output dir.
+2020-12-17 15:54:50.368873 : Program completed
